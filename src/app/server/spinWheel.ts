@@ -13,12 +13,12 @@ const spinWheelAsync = async (spine: User) : Promise<ActionResponse> => {
                 userId: spine.id
             }
         });
-        if (isSpined) {
-            return {
-                statusCodes: StatusCodes.BAD_REQUEST,
-                message: "You have already spinned the wheel"
-            }
-        }
+        // if (isSpined) {
+        //     return {
+        //         statusCodes: StatusCodes.BAD_REQUEST,
+        //         message: "You have already spinned the wheel"
+        //     }
+        // }
         const spinInterval = TimeConstants.SPIN_INTERVAL;
         const totalSteps = (TimeConstants.SPIN_TIME * 1000) / (spinInterval * (Math.random() + 1));
         let step = 1;

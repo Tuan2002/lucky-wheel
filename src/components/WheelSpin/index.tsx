@@ -16,6 +16,7 @@ export const WheelComponent: React.FC = () => {
       openModal(currentWinner);
     }
   }, [currentWinner]);
+  
 
   return (
     <div className="w-full h-full flex gap-20 z-1 flex-row ">

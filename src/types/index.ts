@@ -1,5 +1,6 @@
-import { SVGProps } from "react";
-
+import { SVGProps } from 'react';
+import { MezonWebView } from './webview';
+export declare const WebView: MezonWebView;
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
@@ -16,10 +17,10 @@ export interface WheelProps {
   itemBackgroundColors: string[];
   radius: number;
   borderColor: string;
-  borderWidth:number;
-  lineColor:string;
+  borderWidth: number;
+  lineColor: string;
   lineWidth: number;
-  pointerAngle:number;
+  pointerAngle: number;
   itemLabelFont: string;
   itemLabelFontSizeMax: number;
   rotationResistance: number;
@@ -50,3 +51,8 @@ export type SpinResult = {
   reward: any;
   index: number;
 };
+export interface IUser {
+  id: string;
+  display_name: string;
+  avatar_url: string;
+}

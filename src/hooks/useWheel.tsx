@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, RefObject, useEffect } from 'react';
 // @ts-expect-error
 import { Wheel } from 'spin-wheel';
 import { UseWheelReturn, WheelProps } from '../types';
+import { spinWheelAsync } from '@/app/server/spinWheel';
 
 export const useWheel = (
   containerRef: RefObject<HTMLDivElement>
@@ -87,27 +88,21 @@ export const useWheel = (
     wheelRef.current = new Wheel(containerRef.current, wheelProps);
   }, [names, containerRef]);
 
-  const spin = useCallback(() => {
-    if (!wheelRef.current || isSpinning || names.length < 2) return;
-
-    setIsSpinning(true);
-    setCurrentWinner(null);
-    const targetIndex = Math.floor(Math.random() * names.length);
-
-    wheelRef.current.spinToItem(targetIndex, 5000, true, 8, 1);
-  }, [names.length, isSpinning]);
-
-  // Reset the wheel
-  const reset = useCallback(() => {
-    setNames([]);
-    setCurrentWinner(null);
-    setIsSpinning(false);
-
-    if (wheelRef.current) {
-      wheelRef.current.remove();
-      wheelRef.current = null;
+  const spin = async () => {
+    try {
+      setIsSpinning(true);
+      setCurrentWinner(null);
+      const res = await spinWheelAsync({
+        id: '1',
+        name: '1',
+        userName: '1',
+      });
+      console.log(res);
+      wheelRef.current.spinToItem(res.data, 5000, true, 8, 1);
+    } catch (error) {
+      console.log(error);
     }
-  }, []);
+  };
 
   // Update wheel when names change
   useEffect(() => {
