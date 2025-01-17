@@ -33,3 +33,20 @@ export interface UseWheelReturn {
   isSpinning: boolean;
   currentWinner: string | null;
 }
+
+export type User = {
+  id: string;
+  name: string;
+  userName: string;
+};
+
+export type ActionResponse = {
+  statusCodes: number;
+  message?: string;
+  data?: any;
+};
+
+export type SpinResult = {
+  reward: any;
+  index: number;
+};
