@@ -1,8 +1,10 @@
 "use client"
+import { spinWheelAsync } from "@/app/server/spinWheel";
 import { useWheel } from "@/hooks/useWheel";
 import { FC } from "react";
 // @ts-ignore
 import { Wheel } from "spin-wheel";
+import { v4 as uuid } from "uuid";
 
 const randomizeNumber = (number: number) => Math.floor(Math.random() * number);
 
@@ -43,13 +45,16 @@ const ElementWheel: FC = () => {
             <div className="w-full h-full">
                 <button
                     className="absolute top-0 left-0 z-10"
-                    onClick={() => {
-                        wheel!.spinToItem(
-                            randomizeNumber(wheelItems.length),
-                            4000,
-                            true,
-                            5
+                    onClick={ async () => {
+                        const res = await spinWheelAsync(
+                            {
+                                id: uuid(),
+                                name: "Tuan Nguyen Ngoc Anh",
+                                userName: "tuan.nguyenngocanh",
+                            }
                         );
+                        console.log(res);
+                    
                     }}
                 >
                     Spin!
