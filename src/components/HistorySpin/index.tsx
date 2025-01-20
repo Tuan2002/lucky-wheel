@@ -50,12 +50,7 @@ const HistorySpin = () => {
       };
     },
   });
-  console.log("Has more: ", hasMore);
   const [loaderRef, scrollerRef] = useInfiniteScroll({ hasMore, onLoadMore: historyList.loadMore });
-
-  const formattedDate = (time: Date) => {
-    return time.toLocaleDateString('vi-VN');
-  };
   return (
     <>
       <Button
