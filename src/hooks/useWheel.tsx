@@ -3,48 +3,25 @@ import { useState, useRef, useCallback, RefObject, useEffect } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { Wheel } from 'spin-wheel';
-import { UseWheelReturn, WheelProps } from '../types';
+import { ActionResponse, UseWheelReturn, WheelProps } from '../types';
 import { spinWheelAsync } from '@/app/server/spinWheel';
+import { GameRewards } from '@/constants/gameRewards';
+import { toast } from 'react-toastify';
+import { useUser } from './useUser';
 
 export const useWheel = (
   containerRef: RefObject<HTMLDivElement>
 ): UseWheelReturn => {
-  const [names, setNames] = useState<string[]>([
-    '500.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '200.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '200.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '200.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '200.000 VND',
-    '50.000 VND',
-    '100.000 VND',
-    '50.000 VND',
-    '200.000 VND',
-  ]);
+  const [names, _] = useState<string[]>(GameRewards.map((item) => item.text));
   const [currentWinner, setCurrentWinner] = useState<string | null>(null);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const wheelRef = useRef<Wheel | null>(null);
+  const { userInfo } = useUser();
 
   // Initialize wheel
   const initWheel = useCallback(() => {
     if (!containerRef.current || names.length === 0) return;
 
-    // Cleanup previous wheel instance
     if (wheelRef.current) {
       wheelRef.current.remove();
       wheelRef.current = null;
@@ -55,7 +32,6 @@ export const useWheel = (
       weight: 1,
       labelColor: '#000',
     }));
-
     const wheelProps: WheelProps = {
       items,
       radius: 1,
@@ -92,13 +68,13 @@ export const useWheel = (
     try {
       setIsSpinning(true);
       setCurrentWinner(null);
-      const res = await spinWheelAsync({
-        id: '1',
-        name: '1',
-        userName: '1',
-      });
-      console.log(res);
-      wheelRef.current.spinToItem(res.data, 5000, true, 8, 1);
+
+      const res: ActionResponse = await spinWheelAsync(userInfo!);
+      if (res.data) {
+        wheelRef.current.spinToItem(res.data.index, 5000, true, 8, 1);
+      } else {
+        toast.warning(res.message);
+      }
     } catch (error) {
       console.log(error);
     }

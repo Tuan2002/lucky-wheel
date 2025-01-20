@@ -54,5 +54,12 @@ export type SpinResult = {
 export interface IUser {
   id: string;
   display_name: string;
-  avatar_url: string;
+  username: string;
+}
+export interface History {
+  id: string;
+  userId: string;
+  userName: string;
+  rewardValue: number;
+  spinTime: Date;
 }

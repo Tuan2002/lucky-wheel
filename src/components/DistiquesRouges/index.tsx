@@ -14,7 +14,7 @@ const DistiquesRouges = ({ text }: Prop) => {
   }, []);
 
   return (
-    <div className="flex justify-start items-start  bg-red-100 p-10">
+    <div className="flex justify-start items-star lg:min-w-60 min-w-40 p-10">
       <div className="relative w-full max-w-64">
         <div
           className={`
@@ -49,7 +49,7 @@ const DistiquesRouges = ({ text }: Prop) => {
               return (
                 <h1
                   key={index}
-                  className="text-4xl font-bold text-red-800 mb-8"
+                  className="lg:text-4xl font-bold text-red-800 mb-8 text-xl"
                 >
                   {item}
                 </h1>

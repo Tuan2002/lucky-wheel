@@ -7,17 +7,17 @@ import { StatusCodes } from "http-status-codes";
 
 const spinWheelAsync = async (spine: User) : Promise<ActionResponse> => {
     try {
-        // const isSpined = await prisma.spinHistory.findFirst({
-        //     where: {
-        //         userId: spine.id
-        //     }
-        // });
-        // if (isSpined) {
-        //     return {
-        //         statusCodes: StatusCodes.BAD_REQUEST,
-        //         message: "You have already spinned the wheel"
-        //     }
-        // }
+        const isSpined = await prisma.spinHistory.findFirst({
+            where: {
+                userId: spine.id
+            }
+        });
+        if (isSpined) {
+            return {
+                statusCodes: StatusCodes.BAD_REQUEST,
+                message: "You have already spinned the wheel"
+            }
+        }
         // Random reward
         const randomIndex = Math.floor(Math.random() * GameRewards.length);
         const spinResult: SpinResult = {
@@ -26,13 +26,13 @@ const spinWheelAsync = async (spine: User) : Promise<ActionResponse> => {
         };
       
         console.log(`Spinned result:`,spinResult);
-        // await prisma.spinHistory.create({
-        //     data: {
-        //         userId: spine.id,
-        //         userName: spine.userName,
-        //         rewardValue: Number(spinResult.reward?.value) || 0,
-        //     }
-        // });
+        await prisma.spinHistory.create({
+            data: {
+                userId: spine.id,
+                userName: spine.userName,
+                rewardValue: Number(spinResult.reward?.value) || 0,
+            }
+        });
         return {
             statusCodes: StatusCodes.OK,
             message: "You have successfully spinned the wheel",

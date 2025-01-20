@@ -13,9 +13,7 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  icons: {
-    icon: '/favicon.ico',
-  },
+  icons: {},
 };
 
 export const viewport: Viewport = {
@@ -32,7 +30,9 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
+      <head>
+        <script async src="/mezon-sdk.js"></script>
+      </head>
       <body
         className={clsx(
           'min-h-screen bg-background font-sans antialiased',
@@ -41,7 +41,7 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: 'class', defaultTheme: '' }}>
           <div className="relative flex flex-col h-screen w-full">
-            <main className="container pt-16 px-6 max-w-none w-full flex-grow ">
+            <main className="container  max-w-none w-full flex-grow ">
               {children}
             </main>
           </div>

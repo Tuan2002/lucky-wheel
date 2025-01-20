@@ -22,10 +22,10 @@ const createConfetti = (
 ): Confetti => {
   const sizeX = Math.random() * 8 + 8; // Ellipse width
   const sizeY = sizeX / 2; // Ellipse height
-  const speed = Math.random() * 4 + 4; // Faster initial speed for higher arc
+  const speed = Math.random() * 4 + 9; // Faster initial speed for higher arc
   const speedX = Math.cos(angle) * speed;
   const speedY = Math.sin(angle) * speed;
-  const gravity = 0.03; // Reduced gravity for slower fall
+  const gravity = 0.08; // Reduced gravity for slower fall
   const rotation = Math.random() * 360;
   const rotationSpeed = Math.random() * 10 - 5;
 
@@ -141,7 +141,7 @@ const ConfettiCanvas: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       closeModalConfetti();
-    }, 6000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [closeModalConfetti]);
