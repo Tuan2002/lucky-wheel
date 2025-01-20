@@ -1,8 +1,10 @@
 'use client';
+import { TimeConstants } from '@/constants/timeConstants';
+import { checkNewYear } from '@/helpers';
 import { useUser } from '@/hooks/useUser';
 import { IUser, User } from '@/types';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const Countdown = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -14,14 +16,9 @@ const Countdown = () => {
   const [showLuckyDraw, setShowLuckyDraw] = useState(false);
 
   useEffect(() => {
-    const checkNewYear = () => {
-      const currentDate = new Date();
-      const lunarNewYear = new Date('2025-01-20T11:12:00');
-      return currentDate >= lunarNewYear;
-    };
 
     const calculateTimeLeft = () => {
-      const lunarNewYear = new Date('2025-01-20T11:12:00').getTime();
+      const lunarNewYear = new Date(TimeConstants.NEW_LUNAR_YEAR).getTime();
       const now = new Date().getTime();
       const difference = lunarNewYear - now;
 

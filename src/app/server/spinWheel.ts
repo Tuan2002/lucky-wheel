@@ -1,12 +1,25 @@
 "use server";
 
 import { GameRewards } from "@/constants/gameRewards";
+import { checkNewYear } from "@/helpers";
 import { prisma } from "@/libs/prisma";
 import { ActionResponse, SpinResult, User } from "@/types";
 import { StatusCodes } from "http-status-codes";
 
 const spinWheelAsync = async (spine: User) : Promise<ActionResponse> => {
     try {
+        if (!checkNewYear()) {
+            return {
+                statusCodes: StatusCodes.BAD_REQUEST,
+                message: "You can only spin the wheel after the Lunar New Year"
+            }
+        }
+        if (!spine) {
+            return {
+                statusCodes: StatusCodes.BAD_REQUEST,
+                message: "You must login to Mezon to spin the wheel"
+            }
+        }
         const isSpined = await prisma.spinHistory.findFirst({
             where: {
                 userId: spine.id
@@ -25,7 +38,6 @@ const spinWheelAsync = async (spine: User) : Promise<ActionResponse> => {
             index: randomIndex
         };
       
-        console.log(`Spinned result:`,spinResult);
         await prisma.spinHistory.create({
             data: {
                 userId: spine.id,
@@ -48,20 +60,31 @@ const spinWheelAsync = async (spine: User) : Promise<ActionResponse> => {
     }
 };
 
-const getSpinHistoryAsync = async (userId: string): Promise<ActionResponse> => {
+const getSpinHistoryAsync = async (currentCursor?: string): Promise<ActionResponse> => {
     try {
         const spinHistories = await prisma.spinHistory.findMany({
-            where: {
-                userId: userId
+            take: 5,
+            ...(currentCursor && {
+                skip: 1, // Do not include the cursor itself in the query result.
+                cursor: {
+                    id: currentCursor as string,
+                }
+            }),
+            orderBy: {
+                spinTime: 'desc'
             }
         });
         return {
             statusCodes: StatusCodes.OK,
-            message: "Successfully get spin history",
-            data: spinHistories
+            data: {
+                items: spinHistories,
+                hasNext: spinHistories?.length > 0,
+                nextCursor: spinHistories?.length > 0 ? spinHistories[spinHistories.length - 1].id : null
+            }
         }
     }
     catch (error) {
+        console.error(error);
         return {
             statusCodes: StatusCodes.INTERNAL_SERVER_ERROR,
             message: "An error occurred while getting spin history"

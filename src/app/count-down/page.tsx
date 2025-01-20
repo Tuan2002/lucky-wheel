@@ -1,15 +1,15 @@
 import Countdown from '@/components/Countdown';
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: "Count down"
+  title: "Đếm ngược xuân Ất Tỵ 2025",
 };
+
 export default function CountDownPage() {
   
   return (
     <div
-      className="flex flex-col items-center justify-center   h-screen max-w-none w-full flex-grow bg-no-repeat "
+      className="flex flex-col items-center justify-center bg-cover h-screen max-w-none w-full flex-grow bg-no-repeat "
       style={{
         backgroundImage: "url('/images/hinhnen.jpg')",
       }}

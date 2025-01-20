@@ -1,11 +1,10 @@
 'use client';
 
-import { useWheel } from '@/hooks/useWheel';
-import { useContext, useEffect, useRef, useState } from 'react';
-import DistiquesRouges from '../DistiquesRouges';
 import { WinnerModalContext } from '@/context/winner';
 import { useUser } from '@/hooks/useUser';
-import { IUser, User } from '@/types';
+import { useWheel } from '@/hooks/useWheel';
+import { useContext, useEffect, useRef } from 'react';
+import DistiquesRouges from '../DistiquesRouges';
 import HistorySpin from '../HistorySpin';
 
 export const WheelComponent: React.FC = () => {
@@ -97,7 +96,7 @@ export const WheelComponent: React.FC = () => {
               color: 'red',
             }}
           >
-            Hãy đăng nhập bằng Mezon
+            Vui lòng sử dụng ứng dụng Mezon để tham gia nhận lì xì
           </h1>
         </div>
       )}

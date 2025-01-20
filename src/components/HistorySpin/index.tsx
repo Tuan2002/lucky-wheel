@@ -1,7 +1,6 @@
 'use client';
 
 import { getSpinHistoryAsync } from '@/app/server/spinWheel';
-import { useUser } from '@/hooks/useUser';
 import { History } from '@/types';
 import { Button } from '@heroui/button';
 import {
@@ -12,6 +11,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/modal';
+import { Spinner } from '@heroui/spinner';
 import {
   Table,
   TableBody,
@@ -20,32 +20,39 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useInfiniteScroll } from "@heroui/use-infinite-scroll";
+import { useAsyncList } from "@react-stately/data";
+import currency from 'currency.js';
+import dayjs from 'dayjs';
+import { useState } from 'react';
 
 const HistorySpin = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
 
-  const { userInfo } = useUser();
-  const [history, setHistory] = useState<History[]>([]);
-  const getHistory = async (id: string) => {
-    try {
-      const res = await getSpinHistoryAsync(id);
-      if (res?.data) {
-        setHistory(res.data as History[]);
-        toast.success(res.message || 'Data fetched successfully');
-      } else {
-        toast.error(res?.message || 'Something went wrong');
+  let historyList = useAsyncList({
+    async load({ signal, cursor }) {
+      if (cursor) {
+        setIsLoading(false);
       }
-    } catch (error) {
-      toast.error('Failed to fetch history');
-    }
-  };
-  useEffect(() => {
-    if (isOpen && userInfo?.id) {
-      getHistory(userInfo.id);
-    }
-  }, [isOpen, userInfo?.id]);
+
+      // If no cursor is available, then we're loading the first page.
+      // Otherwise, the cursor is the next URL to load, as returned from the previous page.
+      const res = await getSpinHistoryAsync(cursor);
+      let data = res?.data
+
+      setHasMore(data.hasNext);
+      console.log(data);
+      return {
+        items: data?.items,
+        cursor: data?.nextCursor,
+      };
+    },
+  });
+  console.log("Has more: ", hasMore);
+  const [loaderRef, scrollerRef] = useInfiniteScroll({ hasMore, onLoadMore: historyList.loadMore });
+
   const formattedDate = (time: Date) => {
     return time.toLocaleDateString('vi-VN');
   };
@@ -59,42 +66,70 @@ const HistorySpin = () => {
         Lịch sử
       </Button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='2xl'>
         <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 Lịch sử lì xì
               </ModalHeader>
-              <ModalBody>
-                <Table aria-label="Example static collection table">
+              <ModalBody className='relative'>
+                <Table 
+                  aria-label='Lịch sử lì xì'
+                  removeWrapper
+                  isHeaderSticky
+                  baseRef={scrollerRef}
+                  bottomContent={
+                    hasMore ? (
+                      <div className="flex w-full justify-center">
+                        <Spinner ref={loaderRef} color="white" />
+                      </div>
+                    ) : null
+                  }
+                  classNames={{
+                    base: "max-h-[520px] overflow-scroll no-scrollbar",
+                    table: "min-h-[400px] no-scrollbar",
+                  }}>
                   <TableHeader>
-                    <TableColumn>Tên</TableColumn>
+                    <TableColumn>Tên người dùng</TableColumn>
                     <TableColumn>Số tiền</TableColumn>
                     <TableColumn>Thời gian</TableColumn>
                   </TableHeader>
-                  <TableBody>
-                    {history ? (
-                      history.map((item, index) => {
-                        return (
-                          <TableRow key={index}>
-                            <TableCell>{item.userName}</TableCell>
-                            <TableCell>{item.rewardValue} VND</TableCell>
-                            <TableCell>
-                              {formattedDate(item.spinTime)}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    ) : (
-                      <h1>Chưa ai nhận được lì xì</h1>
+                  <TableBody
+                    isLoading={isLoading}
+                    className='no-scrollbar'
+                    items={historyList.items as History[] ?? []}
+                    loadingContent={<Spinner color="white" />}
+                  >
+                    {(item: History) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.userName}</TableCell>
+                        <TableCell>{currency(item.rewardValue ?? 0, {
+                          symbol: 'VNĐ',
+                          precision: 0,
+                          pattern: `# !`,
+                        }).format()}</TableCell>
+                        <TableCell>{dayjs(item.spinTime).format('DD/MM/YYYY HH:mm')}</TableCell>
+                      </TableRow>
                     )}
                   </TableBody>
                 </Table>
+                {
+                hasMore &&
+                    (
+                      <Button
+                        onPress={historyList.loadMore}
+                        color="primary"
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2"
+                      >
+                        Tải thêm
+                      </Button>
+                    )
+                }
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                  Đóng
                 </Button>
               </ModalFooter>
             </>
